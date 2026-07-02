@@ -1,0 +1,48 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+}
+
+<aside class="sidebar offcanvas-md offcanvas-start" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="sidebar-brand">
+        <a asp-controller="Dashboard" asp-action="Index" class="text-decoration-none text-reset">WorkForceHub</a>
+    </div>
+    
+    <nav class="sidebar-nav" aria-label="Main Navigation">
+        <a asp-controller="Dashboard" asp-action="Index" class="sidebar-link @(currentController == "Dashboard" ? "active" : "")">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Dashboard</span>
+        </a>
+        <a asp-controller="Employee" asp-action="Index" class="sidebar-link @(currentController == "Employee" ? "active" : "")">
+            <i class="bi bi-people-fill"></i>
+            <span>Employees</span>
+        </a>
+        <a asp-controller="Department" asp-action="Index" class="sidebar-link @(currentController == "Department" ? "active" : "")">
+            <i class="bi bi-building-fill"></i>
+            <span>Departments</span>
+        </a>
+        <a asp-controller="Position" asp-action="Index" class="sidebar-link @(currentController == "Position" ? "active" : "")">
+            <i class="bi bi-briefcase-fill"></i>
+            <span>Positions</span>
+        </a>
+        <a asp-controller="LeaveRequest" asp-action="Index" class="sidebar-link @(currentController == "LeaveRequest" ? "active" : "")">
+            <i class="bi bi-calendar-event-fill"></i>
+            <span>Leaves</span>
+        </a>
+        <a asp-controller="Payroll" asp-action="Index" class="sidebar-link @(currentController == "Payroll" ? "active" : "")">
+            <i class="bi bi-wallet2"></i>
+            <span>Payroll</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="d-flex align-items-center justify-content-between">
+            <span class="text-muted text-xs text-truncate me-2" title="@User.Identity?.Name">@User.Identity?.Name</span>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-link p-0 text-danger" title="Sign Out" aria-label="Sign Out">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</aside>

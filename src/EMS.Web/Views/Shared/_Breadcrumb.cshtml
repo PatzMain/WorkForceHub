@@ -1,0 +1,40 @@
+@{
+    var breadcrumbs = ViewData["Breadcrumbs"] as List<(string Label, string? Url)>;
+    var controllerName = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var actionName = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+}
+
+<nav aria-label="Breadcrumb" class="wfh-breadcrumb">
+    <ol class="breadcrumb m-0 align-items-center">
+        <li class="breadcrumb-item">
+            <a asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                <i class="bi bi-house-door-fill me-1"></i>Home
+            </a>
+        </li>
+        @if (breadcrumbs != null && breadcrumbs.Any())
+        {
+            @foreach (var crumb in breadcrumbs)
+            {
+                if (crumb == breadcrumbs.Last())
+                {
+                    <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">@crumb.Label</li>
+                }
+                else if (crumb.Url != null)
+                {
+                    <li class="breadcrumb-item"><a href="@crumb.Url" class="text-decoration-none">@crumb.Label</a></li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item">@crumb.Label</li>
+                }
+            }
+        }
+        else
+        {
+            @if (controllerName != "Home" && controllerName != "Dashboard")
+            {
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">@controllerName</li>
+            }
+        }
+    </ol>
+</nav>

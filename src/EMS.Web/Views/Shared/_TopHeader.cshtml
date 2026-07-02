@@ -1,0 +1,27 @@
+<header class="top-header">
+    <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-muted d-md-none p-1 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+        <partial name="_Breadcrumb" />
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+        <div class="d-none d-sm-flex align-items-center gap-2">
+            <span class="text-muted small">Hello, <strong>@User.Identity?.Name</strong></span>
+            @{
+                var initials = "";
+                if (User.Identity != null && !string.IsNullOrEmpty(User.Identity.Name))
+                {
+                    var parts = User.Identity.Name.Split('@')[0].Split('.');
+                    if (parts.Length > 1) initials = (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+                    else if (parts.Length > 0 && parts[0].Length > 0) initials = parts[0][0].ToString().ToUpper();
+                }
+                if (string.IsNullOrEmpty(initials)) initials = "U";
+            }
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.85rem;" role="img" aria-label="User profile initials">
+                @initials
+            </div>
+        </div>
+    </div>
+</header>

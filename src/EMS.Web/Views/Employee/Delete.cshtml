@@ -1,0 +1,33 @@
+@model EMS.Application.DTOs.Employee.EmployeeDto
+@{
+    ViewData["Title"] = "Delete Employee";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Employees", Url.Action("Index", "Employee")),
+        ("Delete Profile", null)
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card wfh-card">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4 text-danger">
+                    <i class="bi bi-person-x" style="font-size: 3.5rem;"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-2">Delete Employee Record?</h3>
+                <p class="text-muted mb-4">Are you sure you want to permanently delete the employee record for <strong>@Model.FullName</strong> (Employee #: @Model.EmployeeNumber)? This action cannot be undone.</p>
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-center mt-3 gap-2">
+                        <a asp-action="Index" class="btn btn-muted">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4">Delete Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+@model EMS.Application.DTOs.Department.DepartmentUpdateDto
+@{
+    ViewData["Title"] = "Edit Department";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Departments", Url.Action("Index", "Department")),
+        ("Edit Department", null)
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card wfh-card">
+            <div class="card-body p-5">
+                <h3 class="fw-bold text-dark mb-4">Edit Department</h3>
+
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0" role="alert" style="border-radius: var(--radius-md);"></div>
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="Name" class="form-label-custom">Department Name</label>
+                            <input asp-for="Name" class="form-control @(ViewData.ModelState.GetFieldValidationState("Name") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Name-error" />
+                            <span id="Name-error" asp-validation-for="Name" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Code" class="form-label-custom">Code</label>
+                            <input asp-for="Code" class="form-control @(ViewData.ModelState.GetFieldValidationState("Code") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Code-error" />
+                            <span id="Code-error" asp-validation-for="Code" class="invalid-feedback-custom"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ManagerId" class="form-label-custom">Department Manager</label>
+                        <select asp-for="ManagerId" class="form-select @(ViewData.ModelState.GetFieldValidationState("ManagerId") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" asp-items="ViewBag.Employees" aria-describedby="ManagerId-error">
+                            <option value="">-- Select Manager (Optional) --</option>
+                        </select>
+                        <span id="ManagerId-error" asp-validation-for="ManagerId" class="invalid-feedback-custom"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <a asp-action="Index" class="btn btn-muted">Cancel</a>
+                        <button type="submit" class="btn btn-brand">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

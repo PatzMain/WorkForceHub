@@ -1,0 +1,59 @@
+@model EMS.Application.DTOs.Position.PositionUpdateDto
+@{
+    ViewData["Title"] = "Edit Position";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Positions", Url.Action("Index", "Position")),
+        ("Edit Position", null)
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card wfh-card">
+            <div class="card-body p-5">
+                <h3 class="fw-bold text-dark mb-4">Edit Position</h3>
+
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0" role="alert" style="border-radius: var(--radius-md);"></div>
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label-custom">Position Title</label>
+                        <input asp-for="Title" class="form-control @(ViewData.ModelState.GetFieldValidationState("Title") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Title-error" />
+                        <span id="Title-error" asp-validation-for="Title" class="invalid-feedback-custom"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label-custom">Description</label>
+                        <textarea asp-for="Description" class="form-control @(ViewData.ModelState.GetFieldValidationState("Description") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" rows="3" aria-describedby="Description-error"></textarea>
+                        <span id="Description-error" asp-validation-for="Description" class="invalid-feedback-custom"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="BaseSalary" class="form-label-custom">Base Salary</label>
+                            <input asp-for="BaseSalary" type="number" step="0.01" class="form-control @(ViewData.ModelState.GetFieldValidationState("BaseSalary") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="BaseSalary-error" />
+                            <span id="BaseSalary-error" asp-validation-for="BaseSalary" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="SalaryGrade" class="form-label-custom">Salary Grade</label>
+                            <input asp-for="SalaryGrade" class="form-control @(ViewData.ModelState.GetFieldValidationState("SalaryGrade") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="SalaryGrade-error" />
+                            <span id="SalaryGrade-error" asp-validation-for="SalaryGrade" class="invalid-feedback-custom"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <a asp-action="Index" class="btn btn-muted">Cancel</a>
+                        <button type="submit" class="btn btn-brand">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

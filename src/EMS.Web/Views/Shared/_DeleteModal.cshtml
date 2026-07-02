@@ -1,0 +1,89 @@
+<!-- Reusable Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-dark" id="deleteModalLabel">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 pb-4">
+                <div class="text-center mb-4 text-danger" id="deleteModalIconContainer">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                </div>
+                <p class="text-muted text-center m-0" id="deleteModalMessage">
+                    Are you sure you want to proceed with this action?
+                </p>
+                <div class="alert alert-warning border-0 mt-3 d-none" id="deleteModalWarning" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <span id="deleteModalWarningText">Warning details here.</span>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light py-3 px-4 d-flex justify-content-center" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+                <button type="button" class="btn btn-muted px-4" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteModalForm" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger px-4" id="deleteModalSubmitBtn">Proceed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteModal = document.getElementById("deleteModal");
+        if (deleteModal) {
+            deleteModal.addEventListener("show.bs.modal", function (event) {
+                const button = event.relatedTarget;
+                const actionUrl = button.getAttribute("data-action");
+                const itemName = button.getAttribute("data-name");
+                const warningText = button.getAttribute("data-warning");
+                const title = button.getAttribute("data-title") || "Confirm Deletion";
+                const btnText = button.getAttribute("data-btn-text") || "Delete Permanently";
+                const btnClass = button.getAttribute("data-btn-class") || "btn-danger";
+                const iconClass = button.getAttribute("data-icon-class") || "bi-exclamation-triangle-fill";
+                
+                const form = deleteModal.querySelector("#deleteModalForm");
+                const titleLabel = deleteModal.querySelector("#deleteModalLabel");
+                const messageSpan = deleteModal.querySelector("#deleteModalMessage");
+                const warningDiv = deleteModal.querySelector("#deleteModalWarning");
+                const warningSpan = deleteModal.querySelector("#deleteModalWarningText");
+                const submitBtn = deleteModal.querySelector("#deleteModalSubmitBtn");
+                const iconContainer = deleteModal.querySelector("#deleteModalIconContainer");
+
+                form.setAttribute("action", actionUrl);
+                titleLabel.textContent = title;
+                submitBtn.textContent = btnText;
+                
+                // Reset button classes
+                submitBtn.className = "btn px-4 " + btnClass;
+
+                // Set icon
+                iconContainer.innerHTML = `<i class="bi ${iconClass}" style="font-size: 3rem;"></i>`;
+                
+                if (itemName) {
+                    if (title.includes("Cancel")) {
+                        messageSpan.innerHTML = `Are you sure you want to cancel the leave request for <strong>${itemName}</strong>?`;
+                    } else {
+                        messageSpan.innerHTML = `Are you sure you want to permanently delete <strong>${itemName}</strong>? This action cannot be undone.`;
+                    }
+                } else {
+                    messageSpan.innerHTML = "Are you sure you want to proceed? This action cannot be undone.";
+                }
+
+                if (warningText) {
+                    warningSpan.textContent = warningText;
+                    warningDiv.classList.remove("d-none");
+                    if (warningText.includes("must reassign") || warningText.includes("cannot be deleted")) {
+                        submitBtn.setAttribute("disabled", "true");
+                    } else {
+                        submitBtn.removeAttribute("disabled");
+                    }
+                } else {
+                    warningDiv.classList.add("d-none");
+                    submitBtn.removeAttribute("disabled");
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,132 @@
+@model EMS.Application.Common.PagedResult<EMS.Application.DTOs.Payroll.PayrollRecordDto>
+@{
+    ViewData["Title"] = "Payroll Records";
+    Layout = "_Layout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark m-0">Payroll Management</h2>
+        <p class="text-muted m-0">Manage and view pay run statements</p>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+    {
+        <a asp-action="Create" class="btn btn-brand">
+            <i class="bi bi-plus-lg me-2"></i>Run Payroll
+        </a>
+    }
+</div>
+
+<div class="card wfh-card overflow-hidden">
+    <div class="card-body p-0">
+        @if (Model == null || !Model.Items.Any())
+        {
+            ViewData["EmptyStateIcon"] = "bi-wallet2";
+            ViewData["EmptyStateHeading"] = "No Payroll Records Found";
+            ViewData["EmptyStateSubtext"] = "Processed pay statements will appear here.";
+            ViewData["EmptyStateActionUrl"] = Url.Action("Create");
+            ViewData["EmptyStateActionText"] = "Run Payroll";
+            ViewData["EmptyStateActionRole"] = "Admin";
+            <partial name="_EmptyState" />
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="wfh-table">
+                    <caption class="visually-hidden">List of payroll records showing employee details, pay period, gross/net pay, deductions, payment status, and action links</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="ps-4">Employee</th>
+                            <th scope="col">Pay Period</th>
+                            <th scope="col">Gross Pay</th>
+                            <th scope="col">Deductions</th>
+                            <th scope="col">Net Pay</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-semibold text-dark">
+                                    @item.EmployeeFullName
+                                    <div class="text-muted small fw-normal">@item.EmployeeNumber</div>
+                                </td>
+                                <td class="text-muted">
+                                    @item.PayPeriodStart.ToString("MMM dd, yyyy") - @item.PayPeriodEnd.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>@item.GrossPay.ToString("C")</td>
+                                <td class="text-danger">- @item.Deductions.ToString("C")</td>
+                                <td class="fw-bold text-success">@item.NetPay.ToString("C")</td>
+                                <td class="text-center">
+                                    @switch (item.Status)
+                                    {
+                                        case PayrollStatus.Draft:
+                                            <span class="wfh-badge wfh-badge--resigned">Draft</span>
+                                            break;
+                                        case PayrollStatus.Processed:
+                                            <span class="wfh-badge wfh-badge--onleave">Processed</span>
+                                            break;
+                                        case PayrollStatus.Paid:
+                                            <span class="wfh-badge wfh-badge--paid">Paid</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Details / Pay Slip" aria-label="View pay statement details for @item.EmployeeFullName">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </a>
+                                        @if (item.Status == PayrollStatus.Draft && (User.IsInRole("Admin") || User.IsInRole("HR")))
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                                                    data-action="@Url.Action("Delete", "Payroll", new { id = item.Id })" 
+                                                    data-name="draft payroll for @item.EmployeeFullName" 
+                                                    title="Delete" aria-label="Delete draft payroll for @item.EmployeeFullName">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            @if (Model.TotalPages > 1)
+            {
+                <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center px-4 py-3">
+                    <div class="text-muted small">
+                        Showing page @Model.PageNumber of @Model.TotalPages (Total: @Model.TotalCount items)
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm m-0">
+                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                                <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageNumber - 1 })" aria-label="Previous page">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })" aria-label="Page @i">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                                <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageNumber + 1 })" aria-label="Next page">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<partial name="_DeleteModal" />

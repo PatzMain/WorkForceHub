@@ -1,0 +1,107 @@
+@model EMS.Application.DTOs.Leave.LeaveRequestDto
+@{
+    ViewData["Title"] = "Leave Request Details";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Leaves", Url.Action("Index", "LeaveRequest")),
+        ("Application Review", null)
+    };
+}
+
+<div class="row">
+    <!-- Details (Left) -->
+    <div class="col-lg-7 mb-4">
+        <div class="card wfh-card">
+            <div class="card-body p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="wfh-badge wfh-badge--resigned">@Model.LeaveType</span>
+                    @switch (Model.Status)
+                    {
+                        case LeaveStatus.Pending:
+                            <span class="wfh-badge wfh-badge--pending">Pending Review</span>
+                            break;
+                        case LeaveStatus.Approved:
+                            <span class="wfh-badge wfh-badge--approved">Approved</span>
+                            break;
+                        case LeaveStatus.Rejected:
+                            <span class="wfh-badge wfh-badge--rejected">Rejected</span>
+                            break;
+                        case LeaveStatus.Cancelled:
+                            <span class="wfh-badge wfh-badge--resigned">Cancelled</span>
+                            break;
+                    }
+                </div>
+
+                <h3 class="fw-bold text-dark mb-1">@Model.EmployeeFullName</h3>
+                <p class="text-muted small mb-4">Employee Number: @Model.EmployeeNumber</p>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-6">
+                        <label class="form-label-custom d-block">Start Date</label>
+                        <span class="fs-5 text-dark fw-semibold">@Model.StartDate.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label-custom d-block">End Date</label>
+                        <span class="fs-5 text-dark fw-semibold">@Model.EndDate.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label-custom d-block">Total Duration</label>
+                        <span class="fs-5 text-dark fw-semibold">@Model.TotalDays Business Days</span>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label-custom d-block">Reason for Leave</label>
+                        <p class="text-dark mt-1">@Model.Reason</p>
+                    </div>
+                </div>
+
+                @if (Model.Status == LeaveStatus.Approved || Model.Status == LeaveStatus.Rejected)
+                {
+                    <div class="alert bg-light border-0 mt-4 p-4" style="border-radius: var(--radius-md);">
+                        <h6 class="fw-bold text-dark mb-2">Review Information</h6>
+                        <div class="row text-muted small g-2">
+                            <div class="col-md-6"><strong>Reviewed By:</strong> @Model.ReviewedByFullName</div>
+                            <div class="col-md-6"><strong>Date:</strong> @Model.DateReviewed?.ToString("MMMM dd, yyyy")</div>
+                            <div class="col-12 mt-2"><strong>Comments:</strong> @(string.IsNullOrEmpty(Model.ReviewNotes) ? "No comments added." : Model.ReviewNotes)</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Form for Admins/Managers/HR (Right) -->
+    @if (Model.Status == LeaveStatus.Pending && (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("Manager")))
+    {
+        <div class="col-lg-5 mb-4">
+            <div class="card wfh-card">
+                <div class="card-body p-5">
+                    <h4 class="fw-bold text-dark mb-4">Review Application</h4>
+                    
+                    <form id="reviewForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        
+                        <div class="mb-4">
+                            <label class="form-label-custom">Review Notes / Comments</label>
+                            <textarea name="reviewNotes" class="form-control" rows="4" placeholder="Add comments regarding approval or rejection..."></textarea>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button type="submit" asp-action="Approve" class="btn btn-brand w-100 py-2.5">
+                                    <i class="bi bi-check-lg me-1"></i>Approve
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" asp-action="Reject" class="btn btn-danger w-100 py-2.5">
+                                    <i class="bi bi-x-lg me-1"></i>Reject
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

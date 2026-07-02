@@ -1,0 +1,96 @@
+@model EMS.Application.DTOs.Payroll.PayrollRecordCreateDto
+@{
+    ViewData["Title"] = "Run Payroll";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Payroll", Url.Action("Index", "Payroll")),
+        ("Run Payroll", null)
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card wfh-card">
+            <div class="card-body p-5">
+                <h3 class="fw-bold text-dark mb-4">Run Monthly Payroll</h3>
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0" role="alert" style="border-radius: var(--radius-md);"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmployeeId" class="form-label-custom">Select Employee</label>
+                        <select asp-for="EmployeeId" class="form-select @(ViewData.ModelState.GetFieldValidationState("EmployeeId") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" asp-items="ViewBag.Employees" aria-describedby="EmployeeId-error">
+                            <option value="">-- Choose Employee --</option>
+                        </select>
+                        <span id="EmployeeId-error" asp-validation-for="EmployeeId" class="invalid-feedback-custom"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PayPeriodStart" class="form-label-custom">Pay Period Start</label>
+                            <input asp-for="PayPeriodStart" type="date" class="form-control @(ViewData.ModelState.GetFieldValidationState("PayPeriodStart") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="PayPeriodStart-error" />
+                            <span id="PayPeriodStart-error" asp-validation-for="PayPeriodStart" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PayPeriodEnd" class="form-label-custom">Pay Period End</label>
+                            <input asp-for="PayPeriodEnd" type="date" class="form-control @(ViewData.ModelState.GetFieldValidationState("PayPeriodEnd") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="PayPeriodEnd-error" />
+                            <span id="PayPeriodEnd-error" asp-validation-for="PayPeriodEnd" class="invalid-feedback-custom"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="GrossPay" class="form-label-custom">Gross Pay</label>
+                            <input asp-for="GrossPay" type="number" step="0.01" class="form-control @(ViewData.ModelState.GetFieldValidationState("GrossPay") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" placeholder="0.00" aria-describedby="GrossPay-error" />
+                            <span id="GrossPay-error" asp-validation-for="GrossPay" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Deductions" class="form-label-custom">Deductions</label>
+                            <input asp-for="Deductions" type="number" step="0.01" class="form-control @(ViewData.ModelState.GetFieldValidationState("Deductions") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" placeholder="0.00" aria-describedby="Deductions-error" />
+                            <span id="Deductions-error" asp-validation-for="Deductions" class="invalid-feedback-custom"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label-custom">Estimated Net Pay</label>
+                        <div class="form-control bg-light fw-bold text-success fs-5" id="net-pay-preview" style="border-radius: var(--radius-md);">$0.00</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label-custom">Notes</label>
+                        <textarea asp-for="Notes" class="form-control @(ViewData.ModelState.GetFieldValidationState("Notes") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" rows="3" placeholder="Additional details or context..." aria-describedby="Notes-error"></textarea>
+                        <span id="Notes-error" asp-validation-for="Notes" class="invalid-feedback-custom"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <a asp-action="Index" class="btn btn-muted">Cancel</a>
+                        <button type="submit" class="btn btn-brand">Create Draft Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const grossInput = document.getElementById("GrossPay");
+            const dedInput = document.getElementById("Deductions");
+            const netPreview = document.getElementById("net-pay-preview");
+
+            function calculateNet() {
+                const gross = parseFloat(grossInput.value) || 0;
+                const ded = parseFloat(dedInput.value) || 0;
+                const net = gross - ded;
+                netPreview.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(net);
+            }
+
+            grossInput.addEventListener("input", calculateNet);
+            dedInput.addEventListener("input", calculateNet);
+            calculateNet(); // Initial calc
+        });
+    </script>
+}

@@ -1,0 +1,140 @@
+@model EMS.Application.DTOs.Payroll.PayrollRecordDto
+@{
+    ViewData["Title"] = "Pay Statement";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Payroll", Url.Action("Index", "Payroll")),
+        ("Pay Slip Details", null)
+    };
+}
+
+<div class="row">
+    <!-- Pay Statement (Left) -->
+    <div class="col-lg-8 mb-4">
+        <div class="card wfh-card p-5">
+            <!-- Pay Slip Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-4">
+                <div>
+                    <h3 class="fw-bold text-dark m-0">WorkForceHub</h3>
+                    <p class="text-muted m-0 small">Official Pay Statement</p>
+                </div>
+                <div class="text-end">
+                    <span class="small text-muted d-block">Statement ID: #@Model.Id</span>
+                    <span class="small text-muted">Created: @Model.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                </div>
+            </div>
+
+            <!-- Employee Info -->
+            <div class="row mb-5">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <span class="form-label-custom d-block">Issued To</span>
+                    <div class="fs-5 text-dark fw-bold">@Model.EmployeeFullName</div>
+                    <div class="text-muted">Employee #: @Model.EmployeeNumber</div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="form-label-custom d-block">Pay Period</span>
+                    <div class="text-dark fw-semibold">@Model.PayPeriodStart.ToString("MMMM dd, yyyy") - @Model.PayPeriodEnd.ToString("MMMM dd, yyyy")</div>
+                    @if (Model.PaymentDate.HasValue)
+                    {
+                        <div class="text-success small mt-1">Paid on: @Model.PaymentDate.Value.ToString("MMMM dd, yyyy")</div>
+                    }
+                </div>
+            </div>
+
+            <!-- Calculations Breakdown -->
+            <h6 class="fw-bold text-dark border-bottom pb-2">Salary Summary</h6>
+            <div class="row mb-4">
+                <div class="col-6 mb-3">
+                    <span class="text-muted">Basic Salary / Gross Pay</span>
+                </div>
+                <div class="col-6 text-end mb-3">
+                    <span class="text-dark fw-semibold">@Model.GrossPay.ToString("C")</span>
+                </div>
+                
+                <div class="col-6 mb-3">
+                    <span class="text-muted">Deductions (Taxes, Benefits, Penalties)</span>
+                </div>
+                <div class="col-6 text-end mb-3">
+                    <span class="text-danger fw-semibold">- @Model.Deductions.ToString("C")</span>
+                </div>
+
+                <div class="col-12 border-top my-3"></div>
+
+                <div class="col-6">
+                    <span class="fs-5 fw-bold text-dark">Net Paid Amount</span>
+                </div>
+                <div class="col-6 text-end">
+                    <span class="fs-4 fw-bold text-success">@Model.NetPay.ToString("C")</span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div class="mt-4">
+                    <h6 class="text-muted small text-uppercase fw-bold">Notes:</h6>
+                    <p class="text-muted small m-0">@Model.Notes</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Actions Panel (Right) -->
+    @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+    {
+        <div class="col-lg-4 mb-4">
+            <div class="card wfh-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-4">Status & Actions</h5>
+                    
+                    <div class="mb-4">
+                        <span class="text-muted small d-block">Current Status:</span>
+                        @switch (Model.Status)
+                        {
+                            case PayrollStatus.Draft:
+                                <span class="wfh-badge wfh-badge--resigned mt-1">Draft</span>
+                                break;
+                            case PayrollStatus.Processed:
+                                <span class="wfh-badge wfh-badge--onleave mt-1">Processed</span>
+                                break;
+                            case PayrollStatus.Paid:
+                                <span class="wfh-badge wfh-badge--paid mt-1">Paid</span>
+                                break;
+                        }
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        @if (Model.Status == PayrollStatus.Draft)
+                        {
+                            <form asp-action="Process" method="post" class="w-100 m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-brand w-100 py-2.5">
+                                    <i class="bi bi-gear-fill me-1"></i>Process Payroll
+                                </button>
+                            </form>
+                        }
+                        
+                        @if (Model.Status == PayrollStatus.Processed)
+                        {
+                            <form asp-action="Pay" method="post" class="w-100 m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-brand w-100 py-2.5">
+                                    <i class="bi bi-credit-card-fill me-1"></i>Mark as Paid
+                                </button>
+                            </form>
+                        }
+                        
+                        @if (Model.Status == PayrollStatus.Paid)
+                        {
+                            <button class="btn btn-muted w-100 py-2.5" onclick="window.print();">
+                                <i class="bi bi-printer me-1"></i>Print Pay Slip
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

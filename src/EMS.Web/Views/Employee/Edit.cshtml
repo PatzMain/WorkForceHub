@@ -1,0 +1,173 @@
+@model EMS.Application.DTOs.Employee.EmployeeUpdateDto
+@{
+    ViewData["Title"] = "Edit Employee";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Employees", Url.Action("Index", "Employee")),
+        ("Edit Profile", null)
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card wfh-card">
+            <div class="card-body p-5">
+                <h3 class="fw-bold text-dark mb-4">Edit Employee Information</h3>
+
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0" role="alert" style="border-radius: var(--radius-md);"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="ProfilePictureUrl" />
+                    <input type="hidden" asp-for="ApplicationUserId" />
+
+                    <!-- Personal Information -->
+                    <h5 class="fw-bold text-secondary text-uppercase small mb-4 border-bottom pb-2">Personal Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label-custom">First Name</label>
+                            <input asp-for="FirstName" class="form-control @(ViewData.ModelState.GetFieldValidationState("FirstName") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="FirstName-error" />
+                            <span id="FirstName-error" asp-validation-for="FirstName" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label-custom">Last Name</label>
+                            <input asp-for="LastName" class="form-control @(ViewData.ModelState.GetFieldValidationState("LastName") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="LastName-error" />
+                            <span id="LastName-error" asp-validation-for="LastName" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label-custom">Email Address</label>
+                            <input asp-for="Email" type="email" class="form-control @(ViewData.ModelState.GetFieldValidationState("Email") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Email-error" />
+                            <span id="Email-error" asp-validation-for="Email" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label-custom">Phone Number</label>
+                            <input asp-for="Phone" class="form-control @(ViewData.ModelState.GetFieldValidationState("Phone") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Phone-error" />
+                            <span id="Phone-error" asp-validation-for="Phone" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateOfBirth" class="form-label-custom">Date of Birth</label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control @(ViewData.ModelState.GetFieldValidationState("DateOfBirth") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="DateOfBirth-helper DateOfBirth-error" />
+                            <div id="DateOfBirth-helper" class="form-text">Minimum age 18 required.</div>
+                            <span id="DateOfBirth-error" asp-validation-for="DateOfBirth" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Gender" class="form-label-custom">Gender</label>
+                            <select asp-for="Gender" class="form-select @(ViewData.ModelState.GetFieldValidationState("Gender") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Gender-error">
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                                <option value="3">Other</option>
+                            </select>
+                            <span id="Gender-error" asp-validation-for="Gender" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label asp-for="Address" class="form-label-custom">Home Address</label>
+                            <input asp-for="Address" class="form-control @(ViewData.ModelState.GetFieldValidationState("Address") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Address-error" />
+                            <span id="Address-error" asp-validation-for="Address" class="invalid-feedback-custom"></span>
+                        </div>
+                    </div>
+
+                    <!-- Work Details -->
+                    <h5 class="fw-bold text-secondary text-uppercase small mb-4 border-bottom pb-2">Employment Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EmployeeNumber" class="form-label-custom">Employee Number</label>
+                            <input asp-for="EmployeeNumber" class="form-control @(ViewData.ModelState.GetFieldValidationState("EmployeeNumber") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="EmployeeNumber-helper EmployeeNumber-error" />
+                            <div id="EmployeeNumber-helper" class="form-text">Format: EMP-XXXXX</div>
+                            <span id="EmployeeNumber-error" asp-validation-for="EmployeeNumber" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateJoined" class="form-label-custom">Date Joined</label>
+                            <input asp-for="DateJoined" type="date" class="form-control @(ViewData.ModelState.GetFieldValidationState("DateJoined") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="DateJoined-error" />
+                            <span id="DateJoined-error" asp-validation-for="DateJoined" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DepartmentId" class="form-label-custom">Department</label>
+                            <select asp-for="DepartmentId" class="form-select @(ViewData.ModelState.GetFieldValidationState("DepartmentId") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" asp-items="ViewBag.Departments" aria-describedby="DepartmentId-error">
+                                <option value="">-- Select Department --</option>
+                            </select>
+                            <span id="DepartmentId-error" asp-validation-for="DepartmentId" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PositionId" class="form-label-custom">Position</label>
+                            <select asp-for="PositionId" class="form-select @(ViewData.ModelState.GetFieldValidationState("PositionId") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" asp-items="ViewBag.Positions" aria-describedby="PositionId-error">
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            <span id="PositionId-error" asp-validation-for="PositionId" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label-custom">Employment Status</label>
+                            <select asp-for="Status" class="form-select @(ViewData.ModelState.GetFieldValidationState("Status") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="Status-error">
+                                <option value="1">Active</option>
+                                <option value="2">On Leave</option>
+                                <option value="3">Terminated</option>
+                                <option value="4">Resigned</option>
+                            </select>
+                            <span id="Status-error" asp-validation-for="Status" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-3 d-none" id="DateTerminatedDiv">
+                            <label asp-for="DateTerminated" class="form-label-custom text-danger">Date Terminated</label>
+                            <input asp-for="DateTerminated" type="date" class="form-control @(ViewData.ModelState.GetFieldValidationState("DateTerminated") == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")" aria-describedby="DateTerminated-error" />
+                            <span id="DateTerminated-error" asp-validation-for="DateTerminated" class="invalid-feedback-custom"></span>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-custom">Profile Picture</label>
+                            <input type="file" name="profilePicture" class="form-control" accept="image/*" onchange="previewImage(event)" aria-describedby="picture-helper" />
+                            <div id="picture-helper" class="form-text">JPEG or PNG, max 2MB. Leave empty to keep existing.</div>
+                            
+                            <div class="mt-3" id="profile-preview-container">
+                                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                                {
+                                    <img id="profile-preview" src="@Model.ProfilePictureUrl" alt="Existing Profile Picture" class="rounded-circle shadow-sm" style="width: 80px; height: 80px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <img id="profile-preview" src="#" alt="New Profile Preview" class="rounded-circle shadow-sm d-none" style="width: 80px; height: 80px; object-fit: cover;" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <a asp-action="Index" class="btn btn-muted">Cancel</a>
+                        <button type="submit" class="btn btn-brand">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const statusSelect = document.getElementById("Status");
+            const termDiv = document.getElementById("DateTerminatedDiv");
+            
+            function toggleDateTerminated() {
+                if (statusSelect.value == "3" || statusSelect.value == "4") {
+                    termDiv.classList.remove("d-none");
+                } else {
+                    termDiv.classList.add("d-none");
+                }
+            }
+            
+            statusSelect.addEventListener("change", toggleDateTerminated);
+            toggleDateTerminated(); // Run on initial load
+        });
+
+        function previewImage(event) {
+            const input = event.target;
+            const reader = new FileReader();
+            reader.onload = function () {
+                const dataURL = reader.result;
+                const previewImg = document.getElementById('profile-preview');
+                previewImg.src = dataURL;
+                previewImg.classList.remove('d-none');
+            };
+            if (input.files && input.files[0]) {
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

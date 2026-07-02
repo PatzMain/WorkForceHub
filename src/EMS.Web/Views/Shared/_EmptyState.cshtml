@@ -1,0 +1,24 @@
+@{
+    var icon = ViewData["EmptyStateIcon"] as string ?? "bi-folder-x";
+    var heading = ViewData["EmptyStateHeading"] as string ?? "No data found";
+    var subtext = ViewData["EmptyStateSubtext"] as string ?? "There are no records to display at this time.";
+    var actionUrl = ViewData["EmptyStateActionUrl"] as string;
+    var actionText = ViewData["EmptyStateActionText"] as string;
+    var actionRole = ViewData["EmptyStateActionRole"] as string;
+    var hasPermission = string.IsNullOrEmpty(actionRole) || User.IsInRole(actionRole) || User.IsInRole("Admin") || User.IsInRole("HR");
+}
+
+<div class="empty-state-container py-5">
+    <div class="empty-state-icon text-muted mb-3">
+        <i class="bi @icon" style="font-size: 4rem; opacity: 0.6;"></i>
+    </div>
+    <h4 class="fw-bold text-dark mb-2">@heading</h4>
+    <p class="text-muted small mb-4">@subtext</p>
+    
+    @if (!string.IsNullOrEmpty(actionUrl) && !string.IsNullOrEmpty(actionText) && hasPermission)
+    {
+        <a href="@actionUrl" class="btn btn-brand px-4 py-2">
+            @actionText
+        </a>
+    }
+</div>

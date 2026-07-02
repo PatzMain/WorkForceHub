@@ -1,0 +1,291 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark m-0">Dashboard</h2>
+        <p class="text-muted m-0">Real-time overview of workforce operations and metrics</p>
+    </div>
+</div>
+
+<!-- Key Stat Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card wfh-card wfh-stat-card h-100">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="form-label-custom d-block" id="label-employees">Employees</span>
+                    <h2 class="fw-bold text-dark m-0" aria-labelledby="label-employees">@ViewBag.TotalEmployees</h2>
+                    <p class="small text-muted m-0 mt-1">Total workforce registered</p>
+                </div>
+                <div class="icon-circle icon-circle-primary">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card wfh-card wfh-stat-card stat-departments h-100">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="form-label-custom d-block" id="label-departments">Departments</span>
+                    <h2 class="fw-bold text-dark m-0" aria-labelledby="label-departments">@ViewBag.TotalDepartments</h2>
+                    <p class="small text-muted m-0 mt-1">Operational units</p>
+                </div>
+                <div class="icon-circle icon-circle-secondary">
+                    <i class="bi bi-building"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card wfh-card wfh-stat-card stat-positions h-100">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="form-label-custom d-block" id="label-positions">Positions</span>
+                    <h2 class="fw-bold text-dark m-0" aria-labelledby="label-positions">@ViewBag.TotalPositions</h2>
+                    <p class="small text-muted m-0 mt-1">Job title categories</p>
+                </div>
+                <div class="icon-circle icon-circle-warning">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card wfh-card wfh-stat-card stat-payroll h-100">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="form-label-custom d-block" id="label-payroll">Gross Pay</span>
+                    <h2 class="fw-bold text-dark m-0" aria-labelledby="label-payroll">@ViewBag.TotalGrossPayroll.ToString("C0")</h2>
+                    <p class="small text-muted m-0 mt-1">Gross expenses this month</p>
+                </div>
+                <div class="icon-circle icon-circle-success">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Lists Grid -->
+<div class="row">
+    <!-- Left Column: Department Distribution Chart -->
+    <div class="col-lg-8 mb-4">
+        <div class="card wfh-card h-100">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-4">Employees by Department</h5>
+                <div style="height: 320px; position: relative;">
+                    <canvas id="deptChart" role="img" aria-label="Bar chart showing employee counts by department"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Status Breakdowns & Recent Activity -->
+    <div class="col-lg-4 mb-4">
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card wfh-card">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-3">Workforce Status</h5>
+                        <div style="height: 140px; position: relative;">
+                            <canvas id="statusChart" role="img" aria-label="Doughnut chart showing workforce status breakdown"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12">
+                <div class="card wfh-card">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-3">Recent Hires</h5>
+                        @if (ViewBag.RecentEmployees != null && ((IEnumerable<EMS.Application.DTOs.Employee.EmployeeListDto>)ViewBag.RecentEmployees).Any())
+                        {
+                            <div class="d-flex flex-column gap-3">
+                                @foreach (var emp in (IEnumerable<EMS.Application.DTOs.Employee.EmployeeListDto>)ViewBag.RecentEmployees)
+                                {
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center gap-2">
+                                            @if (!string.IsNullOrEmpty(emp.ProfilePictureUrl))
+                                            {
+                                                <img src="@emp.ProfilePictureUrl" alt="@emp.FullName" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;" loading="lazy" />
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                                    @emp.FirstName[0]@emp.LastName[0]
+                                                </div>
+                                            }
+                                            <div>
+                                                <div class="fw-semibold text-dark text-sm">@emp.FullName</div>
+                                                <div class="text-muted text-xs">@emp.DepartmentName</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-muted text-xs">@emp.DateJoined.ToString("MMM dd")</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small m-0">No recent hires to display.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Bottom Row: Leaves Doughnut Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card wfh-card">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-3">Leave Requests</h5>
+                <div style="height: 180px; position: relative;">
+                    <canvas id="leaveChart" role="img" aria-label="Doughnut chart showing leave request status breakdown"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get CSS variable brand colors dynamically
+            const style = getComputedStyle(document.documentElement);
+            const brandPrimary = style.getPropertyValue('--color-brand-primary').trim() || '#4f46e5';
+            const brandSecondary = style.getPropertyValue('--color-brand-secondary').trim() || '#06b6d4';
+            const gray500 = style.getPropertyValue('--color-gray-500').trim() || '#64748b';
+
+            // Chart global font defaults
+            Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+            Chart.defaults.color = gray500;
+
+            // Department Bar Chart
+            const deptCtx = document.getElementById('deptChart').getContext('2d');
+            const deptLabels = @Html.Raw(Json.Serialize(ViewBag.EmployeesByDept.Keys));
+            const deptData = @Html.Raw(Json.Serialize(ViewBag.EmployeesByDept.Values));
+            
+            new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: deptLabels,
+                    datasets: [{
+                        label: 'Employees',
+                        data: deptData,
+                        backgroundColor: brandPrimary + 'e6', // 90% opacity
+                        borderColor: brandPrimary,
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        hoverBackgroundColor: brandPrimary
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 600,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: '#e2e8f0' },
+                            ticks: { precision: 0 }
+                        },
+                        x: { 
+                            grid: { display: false } 
+                        }
+                    }
+                }
+            });
+
+            // Status Pie Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const statusLabels = @Html.Raw(Json.Serialize(ViewBag.EmployeesByStatus.Keys));
+            const statusData = @Html.Raw(Json.Serialize(ViewBag.EmployeesByStatus.Values));
+
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: [
+                            '#10b981', // Active
+                            '#f59e0b', // OnLeave
+                            '#ef4444', // Terminated
+                            '#6b7280'  // Resigned
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    animation: {
+                        duration: 600,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'right',
+                            labels: { boxWidth: 12, padding: 10 }
+                        }
+                    }
+                }
+            });
+
+            // Leaves Doughnut Chart
+            const leaveCtx = document.getElementById('leaveChart').getContext('2d');
+            const leaveLabels = @Html.Raw(Json.Serialize(ViewBag.LeavesByStatus.Keys));
+            const leaveData = @Html.Raw(Json.Serialize(ViewBag.LeavesByStatus.Values));
+
+            new Chart(leaveCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: leaveLabels,
+                    datasets: [{
+                        data: leaveData,
+                        backgroundColor: [
+                            '#f59e0b', // Pending
+                            '#10b981', // Approved
+                            '#ef4444', // Rejected
+                            '#6b7280'  // Cancelled
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    animation: {
+                        duration: 600,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'right',
+                            labels: { boxWidth: 12, padding: 10 }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,24 @@
+@model EMS.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-md-6 text-center">
+        <div class="mb-4 text-danger">
+            <i class="bi bi-exclamation-octagon" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-2">An error occurred</h2>
+        <p class="text-muted mb-4">We apologize for the inconvenience. An unexpected error occurred while processing your request.</p>
+        
+        @if (Model.ShowRequestId)
+        {
+            <p class="text-muted small"><strong>Request ID:</strong> <code>@Model.RequestId</code></p>
+        }
+
+        <a href="/" class="btn btn-brand py-2.5 px-4 mt-2">
+            Return to Safety
+        </a>
+    </div>
+</div>

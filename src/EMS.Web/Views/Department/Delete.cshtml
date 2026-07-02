@@ -1,0 +1,41 @@
+@model EMS.Application.DTOs.Department.DepartmentDto
+@{
+    ViewData["Title"] = "Delete Department";
+    Layout = "_Layout";
+    ViewData["Breadcrumbs"] = new List<(string Label, string? Url)>
+    {
+        ("Departments", Url.Action("Index", "Department")),
+        ("Delete Department", null)
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card wfh-card">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4 text-danger">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-2">Delete Department?</h3>
+                <p class="text-muted mb-4">Are you sure you want to permanently delete the department <strong>@Model.Name</strong>? This action cannot be undone.</p>
+
+                @if (Model.TotalEmployees > 0)
+                {
+                    <div class="alert alert-warning border-0 text-start mb-4" style="border-radius: var(--radius-md);">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        This department currently has <strong>@Model.TotalEmployees</strong> active employee(s). You must reassign or remove them before deleting this department.
+                    </div>
+                }
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-center mt-3 gap-2">
+                        <a asp-action="Index" class="btn btn-muted">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4 py-2" @(Model.TotalEmployees > 0 ? "disabled" : "")>Delete Department</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
